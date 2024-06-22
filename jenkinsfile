@@ -4,8 +4,8 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'docker build -t ngimg .'
-        sh 'docker tag ngimg $DOCKER_BFLASK_IMAGE'
+        sh 'docker build -t myimg .'
+        sh 'docker tag myimg $DOCKER_BFLASK_IMAGE'
       }
     }
     stage('Deploy & push') {
@@ -21,7 +21,7 @@ pipeline {
 
 post{
       always{
-            sh 'docker run -d -p 80:80 sarathakashk95/prod:latest'
+            sh 'docker run -d -p 80:80 hanumith/prodcapstone:latest'
 }
 
 }
