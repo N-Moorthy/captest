@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     // Ensure BRANCH_NAME is set, defaulting to 'prod' if not specified
-                    def branch = env.BRANCH_NAME ?: 'prod'
+                    def branch = env.BRANCH_NAME ?: 'dev'
                     echo "Checking out branch: ${branch}"
                     
                     // Checkout SCM using Git plugin
