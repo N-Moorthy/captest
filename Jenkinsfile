@@ -10,7 +10,7 @@ pipeline {
             steps {
                 script {
                     // Ensure BRANCH_NAME is set, defaulting to 'prod' if not specified
-                    def branch = env.BRANCH_NAME ?: 'dev'
+                    def branch = env.BRANCH_NAME ?: 'dev' 
                     echo "Checking out branch: ${branch}"
                     
                     // Checkout SCM using Git plugin
@@ -19,7 +19,7 @@ pipeline {
                               doGenerateSubmoduleConfigurations: false,
                               extensions: [],
                               userRemoteConfigs: [[url: 'https://github.com/N-Moorthy/captest.git',
-                                                   credentialsId: 'gitcreds']]])
+                                                   credentialsId: 'gitcreds']]]) 
                 }
             }
         }
@@ -35,6 +35,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     sh 'chmod +x deploy.sh'
+                    sh '''
                         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
                         ./deploy.sh
                     '''
