@@ -3,6 +3,24 @@ pipeline {
   environment {
         DOCKER_CREDENTIALS_ID = 'dockercreds'
     }
+   stages {
+        stage('Checkout SCM') {
+            steps {
+                script {
+                    // Ensure BRANCH_NAME is set, defaulting to 'prod' if not specified
+                    def branch = env.BRANCH_NAME ?: 'prod'
+                    echo "Checking out branch: ${branch}"
+                    
+                    // Checkout SCM using Git plugin
+                    checkout([$class: 'GitSCM',
+                              branches: [[name: "*/${branch}"]],
+                              doGenerateSubmoduleConfigurations: false,
+                              extensions: [],
+                              userRemoteConfigs: [[url: 'https://github.com/N-Moorthy/captest.git',
+                                                   credentialsId: 'gitcreds']]])
+                }
+            }
+        }
   stages {
     stage('Build') {
       steps {
