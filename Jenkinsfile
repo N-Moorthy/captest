@@ -19,7 +19,7 @@ pipeline {
                               doGenerateSubmoduleConfigurations: false,
                               extensions: [],
                               userRemoteConfigs: [[url: 'https://github.com/N-Moorthy/captest.git',
-                                                   credentialsId: 'gitcreds']]]) 
+                                                   credentialsId: 'gitcreds']]])
                 }
             }
         }
@@ -32,15 +32,12 @@ pipeline {
         }
 
         stage('Deploy & Push') {
-            environment {
-                DOCKERHUB_CREDENTIALS = credentials("${DOCKER_CREDENTIALS_ID}")
-            }
             steps {
-                script {
-                    withEnv(["DOCKER_USERNAME=${env.DOCKERHUB_CREDENTIALS_USR}", "DOCKER_PASSWORD=${env.DOCKERHUB_CREDENTIALS_PSW}"]) {
-                        sh 'chmod +x deploy.sh'
-                        sh './deploy.sh'
-                    }
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    sh 'chmod +x deploy.sh'
+                        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+                        ./deploy.sh
+                    '''
                 }
             }
         }
