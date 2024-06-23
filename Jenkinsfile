@@ -1,6 +1,8 @@
 pipeline {
   agent any
-
+  environment {
+        DOCKER_CREDENTIALS_ID = 'dockercreds'
+    }
   stages {
     stage('Build') {
       steps {
@@ -11,7 +13,7 @@ pipeline {
 
     stage('Deploy & push') {
       steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKER_REGISTRY_CREDS}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
           sh 'chmod +x deploy.sh'
           sh './deploy.sh'
         }
