@@ -17,4 +17,5 @@ elif [[ "${BRANCH_NAME}" == "Dev" ]]; then
     ./build.sh
     docker tag capimg hanumith/devcapstone:v1
     docker push hanumith/devcapstone:v1
+fi
 
