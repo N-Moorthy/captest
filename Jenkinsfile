@@ -1,11 +1,9 @@
 pipeline {
-    agent any
-
-    environment {
+  agent any
+  environment {
         DOCKER_CREDENTIALS_ID = 'dockercreds'
     }
-
-    stages {
+   stages {
         stage('Checkout SCM') {
             steps {
                 script {
@@ -23,24 +21,24 @@ pipeline {
                 }
             }
         }
-
-        stage('Build') {
-            steps {
-                sh 'chmod +x build.sh'
-                sh './build.sh'
-            }
-        }
-
-        stage('Deploy & Push') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                    sh 'chmod +x deploy.sh'
-                    sh '''
-                        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-                        ./deploy.sh
-                    '''
-                }
-            }
-        }
+ 
+  stages {
+    stage('Build') {
+      steps {
+        sh 'chmod +x build.sh'
+        sh './build.sh'
+      }
     }
+
+    stage('Deploy & push') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+          sh 'chmod +x deploy.sh'
+          sh './deploy.sh'
+        }
+      }
+    }
+
+  }
+
 }
