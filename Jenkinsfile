@@ -1,9 +1,11 @@
 pipeline {
-  agent any
-  environment {
+    agent any
+
+    environment {
         DOCKER_CREDENTIALS_ID = 'dockercreds'
     }
-   stages {
+
+    stages {
         stage('Checkout SCM') {
             steps {
                 script {
@@ -17,27 +19,30 @@ pipeline {
                               doGenerateSubmoduleConfigurations: false,
                               extensions: [],
                               userRemoteConfigs: [[url: 'https://github.com/N-Moorthy/captest.git',
-                                                   credentialsId: 'gitcreds']]])
+                                                   credentialsId: 'gitcreds']]]) 
                 }
             }
         }
-  stages {
-    stage('Build') {
-      steps {
-        sh 'chmod +x build.sh'
-        sh './build.sh'
-      }
-    }
 
-    stage('Deploy & push') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-          sh 'chmod +x deploy.sh'
-          sh './deploy.sh'
+        stage('Build') {
+            steps {
+                sh 'chmod +x build.sh'
+                sh './build.sh'
+            }
         }
-      }
+
+        stage('Deploy & Push') {
+            environment {
+                DOCKERHUB_CREDENTIALS = credentials("${DOCKER_CREDENTIALS_ID}")
+            }
+            steps {
+                script {
+                    withEnv(["DOCKER_USERNAME=${env.DOCKERHUB_CREDENTIALS_USR}", "DOCKER_PASSWORD=${env.DOCKERHUB_CREDENTIALS_PSW}"]) {
+                        sh 'chmod +x deploy.sh'
+                        sh './deploy.sh'
+                    }
+                }
+            }
+        }
     }
-
-  }
-
 }
