@@ -1,6 +1,6 @@
 version: '3'
 services:
   web:
-    image: ngimg
+    image: myimg
     ports:
     - "3000:80"
