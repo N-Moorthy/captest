@@ -1,25 +1,34 @@
 pipeline {
-  agent any
-  environment {
+    agent any
+
+    environment {
         DOCKER_CREDENTIALS_ID = 'dockercreds'
-    }
-  stages {
-    stage('Build') {
-      steps {
-        sh 'chmod +x build.sh'
-        sh './build.sh'
-      }
+        DOCKER_USERNAME = credentials('docker-username')
+        DOCKER_PASSWORD = credentials('docker-password')
     }
 
-    stage('Deploy & push') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: "${DOCKER_CREDENTIALS_ID}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
-          sh 'chmod +x deploy.sh'
-          sh './deploy.sh'
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the source code
+                checkout scm
+            }
         }
-      }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Fetch the current branch name
+                    def branchName = env.BRANCH_NAME
+
+                    // Execute the deploy.sh script with the current branch name
+                    sh """
+                    chmod +x build.sh deploy.sh
+                    BRANCH_NAME=${branchName} ./deploy.sh
+                    """
+                }
+            }
+        }
     }
-
-  }
-
 }
+
